@@ -1,25 +1,31 @@
-import logo from './logo.svg';
 import './App.css';
+import fetch from 'node-fetch'
+import { useEffect, useState } from 'react';
+import Section from './Components/Section'
 
-function App() {
+const App = ()=>{
+  const [genres, setGenres] = useState(null)
+
+  const fetchdata = async ()=>{
+    try{
+      const response = await fetch("/.netlify/functions/getGenres")
+      const body = await response.json()
+      setGenres(body.data.reference_list.values)
+    }
+    catch(e){
+      console.log(e)
+    }
+  }
+
+  useEffect(()=>{
+    fetchdata()
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {genres && Object.values(genres).map(genre => <Section genre={genre.value}/>) }
     </div>
-  );
+  )
 }
 
 export default App;
